@@ -17,7 +17,7 @@ while queue:
     cnt += 1
 
     try:
-        urlop = urllib.request.urlopen(url)
+        urlop = urllib.request.urlopen(url,timeout=2)
     except:
         continue
 
