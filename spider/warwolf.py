@@ -15,12 +15,14 @@ import matplotlib.pyplot as plt
 from urllib import request
 from bs4 import BeautifulSoup as bs
 
+#%matplotlib inline
+
 import matplotlib
 matplotlib.rcParams['figure.figsize'] = (10.0, 5.0)
 from wordcloud import WordCloud#词云包
 
-from IPython import get_ipython
-get_ipython().magic('matplotlib inline')
+#from IPython import get_ipython
+#get_ipython().magic('matplotlib inline')
 
 #分析网页函数
 def getNowPlayingMovie_list():
