@@ -1,4 +1,4 @@
-#coding:utf-8
+#generate_from_frequenciescoding:utf-8
 import inline as inline
 import matplotlib as matplotlib
 
