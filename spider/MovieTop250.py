@@ -23,8 +23,7 @@ class MovieTop250:
             response = urllib.request.urlopen(request)
             page = response.read().decode('utf-8')
             pageNum = (self.start + 25) / 25
-            print
-            '正在抓取第' + str(pageNum) + '页数据...'
+            print('正在抓取第' + str(pageNum) + '页数据...')
             self.start += 25
             return page
         except Exception as e:
@@ -32,19 +31,19 @@ class MovieTop250:
                 print('抓取失败，具体原因：', e.reason)
 
     def getMovie(self):
-        pattern = re.compile(u'<div.*?class="item">.*?<div.*?class="pic">.*?'
-                             + u'<em.*?class="">(.*?)</em>.*?'
-                             + u'<div.*?class="info">.*?<span.*?class="title">(.*?)'
-                             + u'</span>.*?<span.*?class="title">(.*?)</span>.*?'
-                             + u'<span.*?class="other">(.*?)</span>.*?</a>.*?'
-                             + u'<div.*?class="bd">.*?<p.*?class="">.*?'
-                             + u'导演: (.*?)&nbsp;&nbsp;&nbsp;'
-                             + u'主演: (.*?)<br>'
-                             + u'(.*?)&nbsp;/&nbsp;(.*?)&nbsp;/&nbsp;'
-                             + u'(.*?)</p>'
-                             + u'.*?<div.*?class="star">.*?<em>(.*?)</em>'
-                             + u'.*?<span>(.*?)人评价</span>.*?<p.*?class="quote">.*?'
-                             + u'<span.*?class="inq">(.*?)</span>.*?</p>', re.S)
+        pattern = re.compile(r'<div.*?class="item">.*?<div.*?class="pic">.*?'
+                             + r'<em.*?class="">(.*?)</em>.*?'
+                             + r'<div.*?class="info">.*?<span.*?class="title">(.*?)'
+                             + r'</span>.*?<span.*?class="title">(.*?)</span>.*?'
+                             + r'<span.*?class="other">(.*?)</span>.*?</a>.*?'
+                             + r'<div.*?class="bd">.*?<p.*?class="">.*?'
+                             + r'导演: (.*?)&nbsp;&nbsp;&nbsp;'
+                             + r'主演: (.*?)<br>'
+                             + r'(.*?)&nbsp;/&nbsp;(.*?)&nbsp;/&nbsp;'
+                             + r'(.*?)</p>'
+                             + r'.*?<div.*?class="star">.*?<em>(.*?)</em>'
+                             + r'.*?<span>(.*?)人评价</span>.*?<p.*?class="quote">.*?'
+                             + r'<span.*?class="inq">(.*?)</span>.*?</p>', re.S)
         while self.start <= 225:
             page = self.getPage()
             movies = re.findall(pattern, page)
