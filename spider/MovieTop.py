@@ -16,6 +16,7 @@ def get_html(web_url):  # 爬虫获取网页没啥好说的
 
 def get_info(all_move,filepath):
     for info in all_move:
+
         #    编号  
         nums = re.findall(r'<em class="">\d+</em>', str(info), re.S | re.M)  # 编号我使用的是正则表达式来获取
         nums = re.findall(r'\d+', str(nums), re.S | re.M)
