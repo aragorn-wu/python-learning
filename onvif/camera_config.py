@@ -12,7 +12,7 @@ class cameraConfig():
         self.security = Security();
         self.authorizations = []
 
-    def _addNewAuthorition(self, userName, password):
+    def _add_authorition(self, userName, password):
         conrainStatus = False
         for auth in self.authorizations:
             if auth[0] == userName and auth[1] == password:
@@ -23,26 +23,26 @@ class cameraConfig():
             self.authorizations.append(configTup)
             print "device %s added username %s and new password %s ." % (self.ip, userName, password)
 
-    def _disableAuthorization(self):
+    def _disable_authorization(self):
         self.validUserName = ''
         self.validPassword = ''
         self.security = None
 
-    def setValidAuth(self, userName, password):
-        self._addNewAuthorition(userName, password)
+    def set_valid_auth(self, userName, password):
+        self._add_authorition(userName, password)
         self.validUserName = userName
         self.validPassword = password
 
         token = UsernameDigestToken(self.validUserName, password)
         self.security.tokens.append(token)
 
-    def getAuthorizationStatus(self):
+    def get_authorization_status(self):
         if self.validUserName.strip() == '' and self.validPassword.strip() == '':
             return False
         return True
 
-    def getAuthorizationInfo(self):
+    def get_authorization_info(self):
         return self.validUserName, self.validPassword
 
-    def getSecurity(self):
+    def get_security(self):
         return self.security

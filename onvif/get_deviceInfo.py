@@ -51,32 +51,32 @@ class ONVIFService(object):
         success, channel, message, content = self.redis_client.parse_message(message)
         if success:
             if channel == RECOGNIZEREQUEST_CHANNEL and message == RECOGNIZEREQUEST_MESSAGE:
-                future = self.pool.submit(self._handleRecognizeMessage, content)
+                future = self.pool.submit(self._handle_recognize_message, content)
             elif channel == RECOGNIZERE_CONFIG:
-                self._handleCameraConfigMessage(content)
+                self._handle_camera_config_message(content)
 
-    def _handleRecognizeMessage(self, content):
+    def _handle_recognize_message(self, content):
         if 'ip' in content:
             ip = content['ip']
             print "received query message,will try to query device ", ip
             if self._validCameraLoginConfigs.has_key(ip):
                 security = self._validCameraLoginConfigs.get(ip).getSecurity()
-                status = self.onvif_client.QueryDeviceBySecurity(ip, security)
+                status = self.onvif_client.query_device_by_security(ip, security)
                 if status != 0:
                     del self._validCameraLoginConfigs[ip]
             else:
-                auths = self._getAuthInfosByIp(ip)
+                auths = self._get_auth_infos_by_ip(ip)
                 if 'v' in content:
                     brand = content['v']
-                    authsByBrand = self._getAuthInfosByBrand(brand);
+                    authsByBrand = self._get_auth_infos_by_brand(brand);
                     auths.extend(authsByBrand)
 
                 for auth in auths:
                     if auth[0] and auth[1]:
-                        status = self.onvif_client.QueryDeviceByUserNameAndPassword(ip, auth[0], auth[1])
+                        status = self.onvif_client.query_device_by_username_and_password(ip, auth[0], auth[1])
                         if status == 0:
                             validAuth = cameraConfig(ip);
-                            validAuth.setValidAuth(auth[0], auth[1])
+                            validAuth.set_valid_auth(auth[0], auth[1])
                             self._validCameraLoginConfigs[ip] = validAuth
                             break
                     else:
@@ -84,7 +84,7 @@ class ONVIFService(object):
         else:
             print "received query message,no ip found .not query the device ."
 
-    def _handleCameraConfigMessage(self, content):
+    def _handle_camera_config_message(self, content):
         print "received camera configuration %s" % (content)
         try:
             jc = None
@@ -103,7 +103,7 @@ class ONVIFService(object):
             print(e)
             print "handle camera config error ."
 
-    def _getAuthInfosByIp(self, ip):
+    def _get_auth_infos_by_ip(self, ip):
         auths = []
         for item in self._cameraLoginConfigs.keys():
             if iputils.is_ip(item) and item == ip:
@@ -115,7 +115,7 @@ class ONVIFService(object):
                         (self._cameraLoginConfigs[item]["userName"], self._cameraLoginConfigs[item]["password"]))
         return auths
 
-    def _getAuthInfosByBrand(self, brand):
+    def _get_auth_infos_by_brand(self, brand):
         auths = []
         for item in self._cameraLoginConfigs.keys():
             if item.lower() == brand.lower():

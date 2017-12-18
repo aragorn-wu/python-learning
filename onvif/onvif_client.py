@@ -30,16 +30,16 @@ class onvifClient(object):
         self.devicemgt_client_pool = WSClientPool(10, 'file://' + FILE_PATH + '/wsdl/devicemgmt.wsdl')
         self.media_client_pool = WSClientPool(10, 'file://' + FILE_PATH + '/wsdl/media.wsdl')
 
-    def QueryDeviceByUserNameAndPassword(self, cameraIp, cameraUserName, cameraPassword):
+    def query_device_by_username_and_password(self, cameraIp, cameraUserName, cameraPassword):
         security = Security()
         token = UsernameDigestToken(cameraUserName, cameraPassword)
         security.tokens.append(token)
 
         deviceInfo = dict()
-        status = self._getDeviceInformation(cameraIp, security, deviceInfo);
+        status = self._get_device_information(cameraIp, security, deviceInfo);
         if status != 0:
             return status
-        status = self._getVideoSourcesInfo(cameraIp, security, deviceInfo)
+        status = self._get_video_sources_info(cameraIp, security, deviceInfo)
         if status != 0:
             return status
         print deviceInfo
@@ -49,12 +49,12 @@ class onvifClient(object):
             cameraIp, cameraUserName, cameraPassword)
         return 0
 
-    def QueryDeviceBySecurity(self, cameraIp, security):
+    def query_device_by_security(self, cameraIp, security):
         deviceInfo = dict()
-        status = self._getDeviceInformation(cameraIp, security, deviceInfo);
+        status = self._get_device_information(cameraIp, security, deviceInfo);
         if status != 0:
             return status
-        status = self._getVideoSourcesInfo(cameraIp, security, deviceInfo)
+        status = self._get_video_sources_info(cameraIp, security, deviceInfo)
         if status != 0:
             return status
         print deviceInfo
@@ -63,7 +63,7 @@ class onvifClient(object):
         print "get device info %s successfully ." % (cameraIp)
         return 0
 
-    def _getVideoSourcesInfo(self, cameraIp, security, deviceInfo):
+    def _get_video_sources_info(self, cameraIp, security, deviceInfo):
         serviceAddr = "http://" + cameraIp + "/onvif/Media"
         dc = self.media_client_pool.get_client(serviceAddr, security)
         print"will get media client .the size of media client is %s" % ( self.media_client_pool.get_size())
@@ -107,7 +107,7 @@ class onvifClient(object):
         print"will return media client .the size of media client is %s" % (self.media_client_pool.get_size())
         return 0
 
-    def _getDeviceInformation(self, cameraIp, security, deviceInfo):
+    def _get_device_information(self, cameraIp, security, deviceInfo):
         serviceAddr = "http://" + cameraIp + "/onvif/device_service"
         dc = self.devicemgt_client_pool.get_client(serviceAddr, security)
         print"will get devicemgt client .the size of devicemgt client is %s" % ( self.devicemgt_client_pool.get_size())
