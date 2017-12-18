@@ -87,11 +87,14 @@ class ONVIFService(object):
     def _handleCameraConfigMessage(self, content):
         print "received camera configuration %s" % (content)
         try:
+            jc = None
             self._cameraLoginConfigs.clear()
-            reader = json.JSONDecoder()
-            jc = reader.decode(content)
+            if isinstance(content, list):
+                jc = content
+            else:
+                reader = json.JSONDecoder()
+                jc = reader.decode(content)
             for c in jc:
-                # for c in content:
                 mode = c["mode"];
                 uncriptedPassword = base64.b64decode(c["password"])
                 c["password"] = uncriptedPassword
@@ -121,12 +124,5 @@ class ONVIFService(object):
 
 
 if __name__ == '__main__':
-    print len(sys.argv)
-    if len(sys.argv) == 4:
-        service = ONVIFService(sys.argv[1], sys.argv[2])
-        service._subscribe()
-    else:
-        print 'Usage: ssdp_client.py mqserver mqport business_ip'
-        quit()
-    # service = ONVIFService("10.10.17.88", 38019)
-    # service._subscribe()
+    service = ONVIFService("10.10.17.88", 38019)
+    service._subscribe()
