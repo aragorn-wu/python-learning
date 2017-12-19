@@ -29,6 +29,8 @@ RECOGNIZERE_CONFIG = "cameraLoginConfigChannel"
 
 FILE_PATH = "/gdsoft/soft/gdps/perception/scanner/onvif"
 
+thread_count = 10
+
 
 class ONVIFService(object):
     def __init__(self, redisip, redisport):
@@ -36,8 +38,8 @@ class ONVIFService(object):
         self._cameraLoginConfigs = dict()
         self._validCameraLoginConfigs = dict()
         self._ranges = iputils.IpRange()
-        self.onvif_client = onvif_client.onvifClient(self.redis_client)
-        self.pool = ThreadPoolExecutor(max_workers=10)
+        self.onvif_client = onvif_client.onvifClient(self.redis_client, thread_count)
+        self.pool = ThreadPoolExecutor(max_workers=thread_count)
 
     def _subscribe(self):
         self.redis_client.subscribe(RECOGNIZERE_CONFIG);
@@ -58,10 +60,12 @@ class ONVIFService(object):
     def _handle_recognize_message(self, content):
         if 'ip' in content:
             ip = content['ip']
+            query_status = False
             print "received query message,will try to query device ", ip
             if self._validCameraLoginConfigs.has_key(ip):
                 security = self._validCameraLoginConfigs.get(ip).getSecurity()
                 status = self.onvif_client.query_device_by_security(ip, security)
+                query_status = True
                 if status != 0:
                     del self._validCameraLoginConfigs[ip]
             else:
@@ -78,9 +82,12 @@ class ONVIFService(object):
                             validAuth = cameraConfig(ip);
                             validAuth.set_valid_auth(auth[0], auth[1])
                             self._validCameraLoginConfigs[ip] = validAuth
+                            query_status = True
                             break
                     else:
                         print "userName or password is invalid .will not query the device %s." % (ip)
+                if query_status:
+                    print "did not find the auth.will not query the device %s ." % (ip)
         else:
             print "received query message,no ip found .not query the device ."
 

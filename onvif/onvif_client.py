@@ -25,10 +25,12 @@ FILE_PATH = "/gdsoft/soft/gdps/perception/scanner/onvif"
 
 
 class onvifClient(object):
-    def __init__(self, redis_client):
+    def __init__(self, redis_client, thread_count):
+        print "begin to init onvif client ."
         self.redis_client = redis_client
-        self.devicemgt_client_pool = WSClientPool(10, 'file://' + FILE_PATH + '/wsdl/devicemgmt.wsdl')
-        self.media_client_pool = WSClientPool(10, 'file://' + FILE_PATH + '/wsdl/media.wsdl')
+        self.devicemgt_client_pool = WSClientPool(thread_count, 'file://' + FILE_PATH + '/wsdl/devicemgmt.wsdl')
+        self.media_client_pool = WSClientPool(thread_count, 'file://' + FILE_PATH + '/wsdl/media.wsdl')
+        print "end init onvif client ."
 
     def query_device_by_username_and_password(self, cameraIp, cameraUserName, cameraPassword):
         security = Security()
@@ -66,7 +68,7 @@ class onvifClient(object):
     def _get_video_sources_info(self, cameraIp, security, deviceInfo):
         serviceAddr = "http://" + cameraIp + "/onvif/Media"
         dc = self.media_client_pool.get_client(serviceAddr, security)
-        print"will get media client .the size of media client is %s" % ( self.media_client_pool.get_size())
+        print"will get media client .the size of media client is %s" % (self.media_client_pool.get_size())
 
         ret = None
         try:
@@ -76,7 +78,7 @@ class onvifClient(object):
             print(e)
             print "get video info %s error ." % (cameraIp)
             self.media_client_pool.return_client(dc)
-            print"will return media client .the size of media client is %s" % ( self.media_client_pool.get_size())
+            print"will return media client .the size of media client is %s" % (self.media_client_pool.get_size())
 
             return -1
         try:
@@ -110,7 +112,7 @@ class onvifClient(object):
     def _get_device_information(self, cameraIp, security, deviceInfo):
         serviceAddr = "http://" + cameraIp + "/onvif/device_service"
         dc = self.devicemgt_client_pool.get_client(serviceAddr, security)
-        print"will get devicemgt client .the size of devicemgt client is %s" % ( self.devicemgt_client_pool.get_size())
+        print"will get devicemgt client .the size of devicemgt client is %s" % (self.devicemgt_client_pool.get_size())
 
         try:
             ret = getattr(dc.service, "GetDeviceInformation")()
@@ -124,10 +126,12 @@ class onvifClient(object):
             print e
             print "get device info %s error ." % (cameraIp)
             self.devicemgt_client_pool.return_client(dc)
-            print"will return devicemgt client .the size of devicemgt client is %s" % (self.devicemgt_client_pool.get_size())
+            print"will return devicemgt client .the size of devicemgt client is %s" % (
+                self.devicemgt_client_pool.get_size())
 
             return 1
         self.devicemgt_client_pool.return_client(dc)
-        print"will return devicemgt client .the size of devicemgt client is %s" % (self.devicemgt_client_pool.get_size())
+        print"will return devicemgt client .the size of devicemgt client is %s" % (
+            self.devicemgt_client_pool.get_size())
 
         return 0
